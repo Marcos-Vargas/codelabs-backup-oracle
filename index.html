@@ -1,0 +1,192 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Tutorial: Copias de Seguridad automáticos y Restauraciones en Oracle con RMAN en Windows 10</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="oracle-backup"
+                  title="Tutorial: Copias de Seguridad automáticos y Restauraciones en Oracle con RMAN en Windows 10"
+                  environment="web"
+                  feedback-link="https://zarin.io">
+    
+      <google-codelab-step label="Pre requisitos" duration="0">
+        <p>Se debe tener:</p>
+<ul>
+<li>Windows 10 o superior</li>
+<li>Oracle Express Edition 21c o superior</li>
+<li>Consola RMAN (Viene por defecto con la instalacion de ORACLE, si no esta instalada debera instalarla manualmente)</li>
+<li>CMD</li>
+<li>Una base de datos previamente configurada y abastecida</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Introducción" duration="0">
+        <p>Las copias de seguridad son un componente fundamental de la administración de bases de datos Oracle. Permiten proteger los datos críticos de la pérdida y facilitan la recuperación en caso de fallos inesperados o errores humanos. Oracle proporciona una poderosa herramienta llamada &#34;Recovery Manager&#34; o RMAN, que simplifica la creación y gestión de copias de seguridad, así como la restauración de datos.</p>
+<p>Este tutorial te guiará a través de los conceptos clave de copias de seguridad y restauraciones en Oracle Database utilizando RMAN. Aprenderás cómo</p>
+<ul>
+<li>Iniciar y configurar RMAN.</li>
+<li>Realizar copias de seguridad completas y parciales de la base de datos.</li>
+<li>Programar copias de seguridad automáticas.</li>
+<li>Restaurar y recuperar la base de datos en caso de fallos.</li>
+<li>Gestionar los archivos de copia de seguridad y registros de RMAN.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Crea tu script para crear backups" duration="0">
+        <p>Crea un archivo .bat con las siguientes instrucciones</p>
+<pre><code>  # Establecer la configuración de RMAN
+
+  CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;
+
+
+  # Configurar la ubicación y el formato de la copia de seguridad
+
+  CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT &#39;C:\ruta\a\mi_carpeta\%U.bkp&#39;;
+
+
+  # Realizar una copia de seguridad completa de la base de datos
+
+  BACKUP DATABASE PLUS ARCHIVELOG;
+
+
+  # Realizar una copia de seguridad de los archivos de control y el archivo de parámetros
+
+  BACKUP CURRENT CONTROLFILE;
+
+  BACKUP SPFILE;
+
+
+  # Realizar una copia de seguridad de los archivos de red o logs
+
+  BACKUP ARCHIVELOG ALL;
+
+
+  # Validar la copia de seguridad
+
+  VALIDATE DATABASE;
+
+
+  # Registrar la copia de seguridad en el catálogo de recuperación (opcional)
+
+  CATALOG START WITH &#39;C:\ruta\a\mi_carpeta\&#39;;
+
+
+  # Limpiar copias de seguridad antiguas (opcional)
+
+  DELETE NOPROMPT OBSOLETE;
+
+
+  # Generar un informe al final de la operación
+
+  SQL &#39;ALTER SYSTEM ARCHIVE LOG CURRENT&#39;;
+</code></pre>
+<p>Remplaza la ruta <code>'C:\ruta\a\mi_carpeta\%U.bkp'</code> por la ruta donde guardaras tu backup y guarda el script en una ubicacion segura y estatica.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Programa el backup automatico" duration="0">
+        <p>Mediante la herramienta de programación de tareas que ofrece Windows vamos a hacer que el script se ejecute a una hora determinada todos los días. Para esto se va a realizar lo siguiente:</p>
+<p>Dirígete al menú de inicio y busca</p>
+<pre><code>Programador de tareas
+</code></pre>
+<p class="image-container"><img alt="Alt text" src="img\726c80287bacdc82.png"></p>
+<p>Y abre la aplicación y deberá aparecer una ventana similar a la de a continuación:</p>
+<p class="image-container"><img alt="Alt text" src="img\3da3498278237f1a.png"></p>
+<p>En el panel derecho damos clic a la opción de crear tarea básica y se despegara una ventana como la siguiente:</p>
+<p class="image-container"><img alt="Alt text" src="img\615347d1de39e427.png"></p>
+<p>Le daremos un nombre y una descripción a la tarea y le damos en siguiente</p>
+<p class="image-container"><img alt="Alt text" src="img\c1dd8999346c8007.png"></p>
+<p>Deberá aparecer una página como la siguiente:</p>
+<p class="image-container"><img alt="Alt text" src="img\7ce269184785180.png"></p>
+<p>Se selecciona de acuerdo a la frecuencia con la que se desee repetir la tarea, para este caso se usara la opción de diariamente:</p>
+<p class="image-container"><img alt="Alt text" src="img\7ce269184785180.png"></p>
+<p>Le damos en siguiente y ahora aparecerá una ventana en donde se podrá configurar la hora especifica a la que se realizara la ejecución del script y cada cuantos días se realizara la ejecución.</p>
+<p class="image-container"><img alt="Alt text" src="img\bcdfd70bc2725c7d.png"></p>
+<p>Se le da siguiente y ahora se debe seleccionar que tipo de acción se va a realizar, para este caso se usara la opción de ejecutar un programa y le damos siguiente</p>
+<p class="image-container"><img alt="Alt text" src="img\67fbcec777cfb676.png"></p>
+<p>Ahora debemos seleccionar que programa o script se va a ejecutar. Damos clic en <code>Examinar</code> y buscamos dentro del ordenador nuestro script del primer paso de este tutorial y lo seleccionamos</p>
+<p class="image-container"><img alt="Alt text" src="img\63c7fcf1bcc12081.png"></p>
+<p class="image-container"><img alt="Alt text" src="img\45c6a042a48701ee.png"></p>
+<p class="image-container"><img alt="Alt text" src="img\d464ce1cc57a8a48.png"></p>
+<p class="image-container"><img alt="Alt text" src="img\4dfb4568999ac49f.png"></p>
+<p>Y le damos siguiente y nos mostrará una ventana con un resumen de la configuración que se ha realizado</p>
+<p class="image-container"><img alt="Alt text" src="img\8a6b747d285b71e9.png"></p>
+<p>Le damos finalizar. En la ventana del Programador de tareas en la parte derecha le da clic en actualizar y podrá visualizar que la tarea ya aparece en la lista de tareas programadas</p>
+<p class="image-container"><img alt="Alt text" src="img\a65b9bc36f37e616.png"></p>
+<p>Podrá ver y editar su tarea dándole clic en propiedades , previamente deberá haber seleccionado la tarea.</p>
+<p>La tarea ya está programada.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Restaurando la base de datos" duration="0">
+        <p>Para restaurar la base de datos mediante el backup que realizamos debemos realizar el siguiente procedimiento:</p>
+<p>Iremos a la consola de Windows al cmd y ejecutaremos los siguientes comandos</p>
+<pre><code>-- Conectarse a la base de datos en modo &#34;mount&#34;
+
+RMAN
+
+CONNECT TARGET /
+
+-- Cerrar la base de datos en modo &#34;normal&#34;
+
+SHUTDOWN NORMAL;
+
+--Después se tiene que montar de nuevo pero sin iniciarla
+
+STARTUP MOUNT;
+
+-- Iniciar la restauración de la base de datos
+
+RESTORE DATABASE;
+
+-- Recuperar la base de datos
+
+RECOVER DATABASE;
+
+-- Abrir la base de datos en modo &#34;normal&#34;
+
+ALTER DATABASE OPEN;
+
+-- O en caso de que no funcione usar
+
+-- STARTUP;
+</code></pre>
+<p>Fin.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

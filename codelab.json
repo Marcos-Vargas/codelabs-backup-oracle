@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2023-09-25T22:48:11-05:00",
+  "id": "oracle-backup",
+  "duration": 0,
+  "title": "Tutorial: Copias de Seguridad automáticos y Restauraciones en Oracle con RMAN en Windows 10",
+  "authors": "Marcos Esteban Vargas Avella",
+  "summary": "ORACLE Backups Automaticos",
+  "source": "Tutoriales md/Backups Automaticos/Backups Automaticos.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "sample"
+  ],
+  "tags": [
+    "medium"
+  ],
+  "feedback": "https://zarin.io",
+  "url": "oracle-backup"
+}
