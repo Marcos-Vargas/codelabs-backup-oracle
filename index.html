@@ -127,8 +127,9 @@
 </code></pre>
 <p>Remplaza la ruta <code>'C:\ruta\a\mi_carpeta\%U.bkp'</code> por la ruta donde guardaras tu backup y guarda el script en una ubicacion segura y estatica. Para este ejemplo se uso <code>'c:\Ruta backup\%U.bkp'</code> y para el catalogo <code>'c:\Ruta backup\'</code>.</p>
 <p>En el mismo lugar donde guardo el <code>backup_oracle.rman</code> crear otro script <code>NOMBRE_SCRIPT.bat</code> y su contenido sera el siguiente:</p>
-<pre><code>RMAN TARGET / @backup_oracle.rman
+<pre><code>RMAN TARGET / @&#34;C:\Ubicacion_Script\backup_oracle.rman&#34;
 </code></pre>
+<p>Hay que usar la direccion completa del archivo <code>rman</code>, de lo contrario no funcionará.</p>
 
 
       </google-codelab-step>
