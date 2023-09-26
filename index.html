@@ -55,7 +55,30 @@
       </google-codelab-step>
     
       <google-codelab-step label="Crea tu script para crear backups" duration="0">
-        <p>Crea un archivo .bat con las siguientes instrucciones</p>
+        <p>Crea un archivo .rman con las siguientes instrucciones</p>
+<pre><code>RUN {
+
+  CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;
+
+  CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT &#39;C:\ruta\a\mi_carpeta\%U.bkp&#39;;
+
+  BACKUP DATABASE PLUS ARCHIVELOG;
+
+  BACKUP CURRENT CONTROLFILE;
+
+  BACKUP SPFILE;
+
+  BACKUP ARCHIVELOG ALL;
+
+  VALIDATE DATABASE;
+
+  CATALOG START WITH &#39;C:\ruta\a\mi_carpeta\&#39;;
+
+  DELETE NOPROMPT OBSOLETE;
+
+  SQL &#39;ALTER SYSTEM ARCHIVE LOG CURRENT&#39;;}
+</code></pre>
+<p>A continuación una resumida explicación de para que sirve cada sentencia:</p>
 <pre><code>  # Establecer la configuración de RMAN
 
   CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;
@@ -102,7 +125,38 @@
 
   SQL &#39;ALTER SYSTEM ARCHIVE LOG CURRENT&#39;;
 </code></pre>
-<p>Remplaza la ruta <code>'C:\ruta\a\mi_carpeta\%U.bkp'</code> por la ruta donde guardaras tu backup y guarda el script en una ubicacion segura y estatica.</p>
+<p>Remplaza la ruta <code>'C:\ruta\a\mi_carpeta\%U.bkp'</code> por la ruta donde guardaras tu backup y guarda el script en una ubicacion segura y estatica. Para este ejemplo se uso <code>'c:\Ruta backup\%U.bkp'</code> y para el catalogo <code>'c:\Ruta backup\'</code>.</p>
+<p>En el mismo lugar donde guardo el <code>backup_oracle.rman</code> crear otro script <code>NOMBRE_SCRIPT.bat</code> y su contenido sera el siguiente:</p>
+<pre><code>RMAN TARGET / @backup_oracle.rman
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Antes de avanzar revisa esto" duration="0">
+        <p>Verificar que data base este configurada en modo archivelog.</p>
+<p>Abre tu consola cmd y sigue los siguientes pasos:</p>
+<pre><code>sqlplus / as sysdba 
+SELECT log_mode FROM v$database;
+</code></pre>
+<p>Si la salida es</p>
+<p class="image-container"><img alt="Alt text" src="img\72e58d992972448e.png"></p>
+<p>Se continua normal con el tutorial, si es otra salida &#34;NOARCHIVELOG&#34; en este caso,  se realiza lo siguiente:</p>
+<ol type="1">
+<li>Primero, necesitas cerrar la base de datos.<pre><code>SHUTDOWN IMMEDIATE;
+</code></pre>
+</li>
+<li>Después de cerrar la base de datos, la montas en modo &#34;mount&#34;, lo que permite hacer cambios en su configuración pero sin abrir la base de datos.<pre><code>STARTUP MOUNT;
+</code></pre>
+</li>
+<li>Ahora puedes ejecutar el comando ALTER DATABASE ARCHIVELOG.<pre><code>ALTER DATABASE ARCHIVELOG;
+</code></pre>
+</li>
+<li>Después de cambiar a ARCHIVELOG mode, puedes abrir la base de datos.<pre><code>ALTER DATABASE OPEN;
+</code></pre>
+</li>
+</ol>
+<p>Ahora la base de datos estará en modo ARCHIVELOG y se podrá continuar con el tutorial normal</p>
 
 
       </google-codelab-step>
@@ -128,12 +182,10 @@
 <p>Se le da siguiente y ahora se debe seleccionar que tipo de acción se va a realizar, para este caso se usara la opción de ejecutar un programa y le damos siguiente</p>
 <p class="image-container"><img alt="Alt text" src="img\67fbcec777cfb676.png"></p>
 <p>Ahora debemos seleccionar que programa o script se va a ejecutar. Damos clic en <code>Examinar</code> y buscamos dentro del ordenador nuestro script del primer paso de este tutorial y lo seleccionamos</p>
-<p class="image-container"><img alt="Alt text" src="img\63c7fcf1bcc12081.png"></p>
-<p class="image-container"><img alt="Alt text" src="img\45c6a042a48701ee.png"></p>
-<p class="image-container"><img alt="Alt text" src="img\d464ce1cc57a8a48.png"></p>
-<p class="image-container"><img alt="Alt text" src="img\4dfb4568999ac49f.png"></p>
+<p class="image-container"><img alt="Alt text" src="img\66b6452a12d436ff.png"></p>
+<p class="image-container"><img alt="Alt text" src="img\9ed3db02398e84a2.png"></p>
 <p>Y le damos siguiente y nos mostrará una ventana con un resumen de la configuración que se ha realizado</p>
-<p class="image-container"><img alt="Alt text" src="img\8a6b747d285b71e9.png"></p>
+<p class="image-container"><img alt="Alt text" src="img\a79635ffca16f012.png"></p>
 <p>Le damos finalizar. En la ventana del Programador de tareas en la parte derecha le da clic en actualizar y podrá visualizar que la tarea ya aparece en la lista de tareas programadas</p>
 <p class="image-container"><img alt="Alt text" src="img\a65b9bc36f37e616.png"></p>
 <p>Podrá ver y editar su tarea dándole clic en propiedades , previamente deberá haber seleccionado la tarea.</p>
